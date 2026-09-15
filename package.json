@@ -1,0 +1,23 @@
+{
+  "name": "codex-account-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cota ao vivo de todas as assinaturas do Codex dentro do popover de conta, com troca em um clique e redefinicao de cota pelo painel.",
+  "bin": {
+    "codex-account-manager": "bin/cam.js"
+  },
+  "scripts": {
+    "preflight": "node bin/preflight.js",
+    "install-tweak": "node bin/cam.js install",
+    "doctor": "node bin/cam.js doctor",
+    "uninstall-tweak": "node bin/cam.js uninstall"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "win32"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}

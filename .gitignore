@@ -1,0 +1,13 @@
+# Relatorio gerado pelo preflight. Regeneravel, e contem caminhos da maquina.
+preflight-report.txt
+
+# Nao usamos npm, mas se alguem rodar por engano
+node_modules/
+package-lock.json
+
+# Ruido de editor e SO
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.log
