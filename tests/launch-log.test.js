@@ -1,0 +1,20 @@
+"use strict";
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs"), os = require("node:os"), path = require("node:path");
+const { spawnSync } = require("node:child_process");
+test("launcher records timings and preserves the earlier failure across a second attempt", { skip: process.platform !== "win32" }, t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "cam-log-test-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(root, "state.json"), JSON.stringify({ active: false, appDir: root, exe: path.join(root, "absent-test-executable.exe") }));
+  const cli = path.resolve(__dirname, "../bin/cam.js");
+  const run = () => spawnSync(process.execPath, [cli, "launch"], { env: { ...process.env, CAM_ROOT: root }, encoding: "utf8", timeout: 5000, windowsHide: true });
+  assert.equal(run().status, 1);
+  const file = path.join(root, "log", "launch-last.log");
+  const first = fs.readFileSync(file, "utf8");
+  assert.match(first, /launch started/); assert.match(first, /ENOENT/); assert.match(first, /finished in \d+ ms; exit=1/);
+  assert.equal(run().status, 1);
+  const second = fs.readFileSync(file, "utf8");
+  assert.ok(second.startsWith(first));
+  assert.equal((second.match(/launch started/g) || []).length, 2);
+});
