@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>Account panel layout preview</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #141414; color: #eee; font: 13px/1.35 Arial, sans-serif;
+    --color-token-text-primary: #eee; --color-token-text-secondary: #b6b6b6; }
+  [role="menu"] { position: absolute; left: 12px; top: 12px; width: 230px; padding: 5px;
+    background: #292929; border-radius: 20px; }
+  .native { padding: 8px 12px; }
+  .identity { border-bottom: 1px solid #454545; margin: 2px 8px 6px; padding: 7px 0 12px; }
+  .identity small { display: block; color: #aaa; }
+</style>
+<div role="menu">
+  <div class="identity">Conta de demonstração<small>Plus</small></div>
+  <div role="menuitem" class="native">Uso</div>
+  <div role="menuitem" class="native">Show Pet</div>
+  <div role="menuitem" class="native">Configurações</div>
+  <div role="menuitem" class="native">Ajuda</div>
+  <div role="menuitem" class="native">Sair</div>
+</div>
+<script>var module = { exports: {} };</script>
+<script src="../payload/index.js"></script>
+<script>
+  const exampleRows = [{ label: "demo-1", email: "example@example.invalid", plan: "plus", current: true,
+    fiveHour: { remaining: 67, resetAtMs: Date.now() + 4 * 3600000 },
+    weekly: { remaining: 90, resetAtMs: Date.now() + 6 * 86400000 }, resets: 0 },
+    { label: "demo-2", email: "long.example.account@example.invalid", plan: "pro", current: false,
+    fiveHour: { remaining: 34, resetAtMs: Date.now() + 2 * 3600000 },
+    weekly: { remaining: 78, resetAtMs: Date.now() + 3 * 86400000 }, resets: 2 }];
+  window.previewApi = { process: "renderer", manifest: { id: "layout-preview" },
+    log: { info: console.log, warn: console.warn, error: console.error },
+    ipc: { invoke: async channel => {
+      if (channel === "usage:all") return { rows: exampleRows };
+      throw new Error("Preview fixture does not perform account operations");
+    } } };
+  module.exports.start(window.previewApi);
+</script>
+</html>
