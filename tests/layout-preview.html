@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>Account panel layout preview</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #141414; color: #eee; font: 13px/1.35 Arial, sans-serif;
+    --color-token-text-primary: #eee; --color-token-text-secondary: #b6b6b6; }
+  [role="menu"] { position: absolute; left: 12px; top: 12px; width: 230px; padding: 5px;
+    background: #292929; border-radius: 20px; }
+  .native { padding: 8px 12px; }
+  .identity { border-bottom: 1px solid #454545; margin: 2px 8px 6px; padding: 7px 0 12px; }
+  .identity small { display: block; color: #aaa; }
+</style>
+<div role="menu">
+  <div class="identity">Conta de demonstração<small>Plus</small></div>
+  <div role="menuitem" class="native">Uso</div>
+  <div role="menuitem" class="native">Show Pet</div>
+  <div role="menuitem" class="native">Configurações</div>
+  <div role="menuitem" class="native">Ajuda</div>
+  <div role="menuitem" class="native">Sair</div>
+</div>
+<button id="profile-preview" type="button" aria-label="Abrir menu do perfil" aria-haspopup="menu"
+  style="position:absolute;top:820px;left:12px">Perfil</button>
+<div id="composer-preview" data-composer-surface-variant="default" data-composer-layout="multiline"
+  style="position:absolute;left:12px;top:570px;width:min(640px,calc(100vw - 24px));display:flex;flex-direction:column;background:#292929;border:1px solid #555;border-radius:20px;overflow:hidden">
+  <textarea aria-label="Mensagem" placeholder="Pergunte ao Codex…" style="background:transparent;color:inherit;border:0;resize:none;min-height:62px;padding:12px;font:inherit"></textarea>
+  <div style="display:flex;justify-content:space-between;padding:4px 12px"><span>+ &nbsp; Modelo</span><button type="button">↑</button></div>
+</div>
+<script>var module = { exports: {} };</script>
+<script src="../payload/index.js"></script>
+<script>
+  const exampleRows = [{ label: "demo-1", email: "example@example.invalid", plan: "pro", current: true,
+    fiveHour: null,
+    weekly: { remaining: 40, resetAtMs: Date.now() + 6 * 86400000 }, resets: 0 },
+    { label: "demo-2", email: "long.example.account@example.invalid", plan: "pro", current: false,
+    fiveHour: { remaining: 34, resetAtMs: Date.now() + 2 * 3600000 },
+    weekly: { remaining: 78, resetAtMs: Date.now() + 3 * 86400000 }, resets: 2 }];
+  window.previewApi = { process: "renderer", manifest: { id: "layout-preview" },
+    log: { info: console.log, warn: console.warn, error: console.error },
+    ipc: { invoke: async channel => {
+      if (channel === "usage:all") return { rows: exampleRows };
+      if (channel === "usage:active") return { row: exampleRows.find(row => row.current) };
+      if (channel === "update:status") return window.previewUpdate || { available: true, current: "26.1007.2314.0", version: "26.1016.8622.0" };
+      if (channel === "update:restart") { window.previewRestarts = (window.previewRestarts || 0) + 1; if (window.previewUpdateError) throw new Error("Simulated restart failure"); return { ok: true }; }
+      throw new Error("Preview fixture does not perform account operations");
+    } } };
+  module.exports.start(window.previewApi);
+  document.querySelector('#profile-preview').addEventListener('keydown', event => {
+    if (event.key !== 'ArrowDown') return;
+    window.previewProfileOpens = (window.previewProfileOpens || 0) + 1;
+    document.querySelector('[role="menu"]').hidden = false;
+  });
+</script>
+</html>
